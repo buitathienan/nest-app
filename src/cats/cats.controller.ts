@@ -6,10 +6,15 @@ import {
   Put,
   Param,
   Delete,
+  HttpException,
+  HttpStatus,
+  UseFilters,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
+import { FobiddenException } from 'src/exceptions/fobidden.exception';
+import { HttpExceptionFilter } from 'src/exceptions/http-exception.filter';
 
 @Controller('cats')
 export class CatsController {
@@ -26,7 +31,9 @@ export class CatsController {
   }
 
   @Get(':id')
+  @UseFilters(HttpExceptionFilter)
   findOne(@Param('id') id: string) {
+    throw new HttpException('Request not allowed', HttpStatus.BAD_REQUEST);
     return `This action returns a #${id} cat`;
   }
 
@@ -37,6 +44,7 @@ export class CatsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
+    throw new FobiddenException();
     return `This action removes a #${id} cat`;
   }
 }
