@@ -9,24 +9,34 @@ import {
   HttpException,
   HttpStatus,
   UseFilters,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { FobiddenException } from 'src/exceptions/fobidden.exception';
 import { HttpExceptionFilter } from 'src/exceptions/http-exception.filter';
+import { RolesGuard } from 'src/guards/role.guard';
+import { Role } from 'src/decorators/role.decorator';
 
 @Controller('cats')
+@UseGuards(RolesGuard)
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
+  @Role(['admin'])
   create(@Body() createCatDto: CreateCatDto) {
     this.catsService.create(createCatDto);
   }
 
   @Get()
-  findAll() {
+  findAll(
+    @Query('pages', new DefaultValuePipe(1), ParseIntPipe) pages: number,
+  ) {
     return this.catsService.findAll();
   }
 
