@@ -13,6 +13,7 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
@@ -21,6 +22,7 @@ import { FobiddenException } from 'src/exceptions/fobidden.exception';
 import { HttpExceptionFilter } from 'src/exceptions/http-exception.filter';
 import { RolesGuard } from 'src/guards/role.guard';
 import { Role } from 'src/decorators/role.decorator';
+import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
 
 @Controller('cats')
 @UseGuards(RolesGuard)
@@ -34,6 +36,7 @@ export class CatsController {
   }
 
   @Get()
+  @UseInterceptors(LoggingInterceptor)
   findAll(
     @Query('pages', new DefaultValuePipe(1), ParseIntPipe) pages: number,
   ) {
